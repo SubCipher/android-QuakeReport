@@ -4,30 +4,30 @@ import java.util.Date;
 
 public class Earthquake {
 
-    private String mMag;
+    private double mMagnitude;
     private String mLocation;
-    private String mDate;
+    private long mDate;
 
     public Earthquake(){}
 
 
-    public Earthquake(String magnitude, String location,String time){
+    public Earthquake(double magnitude, String location,long time){
 
-        mMag = magnitude;
+        mMagnitude = magnitude;
         mLocation = location;
         mDate = time;
     }
 
 
-    public String getmMag() {
-        return mMag;
+    public double getmMagnitude() {
+        return mMagnitude;
     }
 
     public String getmLocation() {
         return mLocation;
     }
 
-    public String getmDate() {
+    public long getmDate() {
         return mDate;
     }
 }
