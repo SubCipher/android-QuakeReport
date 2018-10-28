@@ -14,12 +14,6 @@
      limitations under the License.
 -->
 <resources>
-
-    <!-- text color for the details of earthquake in the list itmem -->
-    <color name="textColorEarthquakeDetails">#BABAC0</color>
-    <!-- text color for primary earthquake location -->
-    <color name="textColorEarthquakeLocation">#2B3D4D</color>
-
     <!-- Primary color of the app (shown in the app bar) -->
     <color name="colorPrimary">#2B3D4D</color>
 
@@ -28,6 +22,12 @@
 
     <!-- Accent color of the app -->
     <color name="colorAccent">#10CAC9</color>
+
+    <!--textColorEarthquakeDetails-->
+    <color name="textColorEarthquakeDetails">#10AAdd</color>
+
+    <!--textColorEarthquakeLocation-->
+    <color name="textColorEarthquakeLocation">#aa5555</color>
 
 
     <!-- Color for an earthquake with magnitude 0 and 2 -->

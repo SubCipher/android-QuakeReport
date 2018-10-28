@@ -3,28 +3,83 @@ package com.example.android.quakereport;
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
+import java.util.List;
 
-public class QuakeAdapter extends ArrayAdapter<Earthquake>{
+public class QuakeAdapter extends ArrayAdapter<Earthquake> {
 
 
+    //public constructor for ArrayAdapter
+
+    private static final String LOCATION_SEPARATOR = " of ";
+
+    public QuakeAdapter(Activity context, List<Earthquake> earthquakes){
+        super(context,0,earthquakes);
+
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent){
+
+        View listItemView = convertView;
+        if(listItemView == null){
+            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.item_list_layout,parent,false);
+        }
+
+        Earthquake currentQuake = getItem(position);
+
+        //bind TextView to data
+        TextView magTextView = listItemView.findViewById(R.id.magnitude_text_view);
+        String formattedMagnitude = formatMagnitude(currentQuake.getmMag());
+        magTextView.setText(formattedMagnitude);
+
+        GradientDrawable magnitudeCircle = (GradientDrawable) magTextView.getBackground();
+        int magnitudeColor = getMagnitudeColor(currentQuake.getmMag());
+        magnitudeCircle.setColor(magnitudeColor);
+
+        String originalLocation = currentQuake.getmLocation();
+
+        String primaryLocation;
+        String locationOffset;
+        if(originalLocation.contains(LOCATION_SEPARATOR)) {
+            String[] parts = originalLocation.split(LOCATION_SEPARATOR);
+            locationOffset = parts[0] + (LOCATION_SEPARATOR);
+            primaryLocation = parts[1];
+
+
+        } else {
+            locationOffset = getContext().getString(R.string.near_the);
+            primaryLocation = originalLocation;
+        }
+
+        TextView primaryLocationView = listItemView.findViewById(R.id.primary_location);
+        primaryLocationView.setText(primaryLocation);
+
+        TextView locationOffsetView = listItemView.findViewById(R.id.location_offset);
+        locationOffsetView.setText(locationOffset);
+
+        Date dateObject = new Date(currentQuake.getmTime());
+        TextView dateView = listItemView.findViewById(R.id.date);
+        String formattedDate = formatDate(dateObject);
+        dateView.setText(formattedDate);
+
+
+        return listItemView;
+    }
 
     private int getMagnitudeColor(double magnitude) {
-
         int magnitudeColorResourceId;
         int magnitudeFloor = (int) Math.floor(magnitude);
-
         switch (magnitudeFloor) {
             case 0:
             case 1:
@@ -58,74 +113,29 @@ public class QuakeAdapter extends ArrayAdapter<Earthquake>{
                 magnitudeColorResourceId = R.color.magnitude10plus;
                 break;
         }
-        // return ContextCompat.getColor(this,magnitudeColorResourceId);
+
         return ContextCompat.getColor(getContext(), magnitudeColorResourceId);
     }
-    //public constructor for ArrayAdapter
-    public QuakeAdapter(Activity context, ArrayList<Earthquake> earthquake){
-        super(context,0,earthquake);
 
+    private String formatMagnitude(double magnitude) {
+        DecimalFormat magnitudeFormat = new DecimalFormat("0.0");
+        return magnitudeFormat.format(magnitude);
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        View listItemView = convertView;
-        if (listItemView == null) {
-            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.item_list_layout, parent, false);
-        }
-
-        Earthquake currentQuake = getItem(position);
-        //bind TextView to data
-
-        TextView magnitudeCircleTextView = (TextView) listItemView.findViewById(R.id.magnitude_text_view);
-        GradientDrawable magnitudeCircle = (GradientDrawable) magnitudeCircleTextView.getBackground();
-        double quakeMagnitude = 0;
-        int magnitudeColor = 0;
-        if (currentQuake != null){
-          quakeMagnitude = currentQuake.getmMagnitude();
-        }
-
-        magnitudeColor = getMagnitudeColor(quakeMagnitude);
-
-       magnitudeCircle.setColor(magnitudeColor);
-
-        DecimalFormat formatter = new DecimalFormat("0.0");
-
-        String magDecimalFormat = formatter.format(quakeMagnitude);
-        magnitudeCircleTextView.setText(magDecimalFormat);
-
-        String inStr = currentQuake.getmLocation();
-        String[] parts = inStr.split(",");
-        String location00 = parts[0];
-        String location01 = parts[1];
-        if (parts[0].length() == 0){
-            location00 = "Near the";
-        }
-
-        TextView localDescription = (TextView) listItemView.findViewById(R.id.location_text_view);
-        localDescription.setText(location00);
-
-        TextView locationActual = (TextView) listItemView.findViewById(R.id.localDescription_text_view);
-        locationActual.setText(location01);
-
-
-        Long strDate = currentQuake.getmDate();
-        Date dateObject = new Date(strDate);
-
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM DD, yyyy", Locale.getDefault());
-        String dateToDisplay = dateFormatter.format(dateObject);
-
-        SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-        String timeToDisplay = timeFormatter.format(dateObject);
-
-
-        TextView dateTextView = (TextView) listItemView.findViewById(R.id.date_text_view);
-        TextView timeTextView = (TextView) listItemView.findViewById(R.id.time_text_view);
-        dateTextView.setText(dateToDisplay);
-        timeTextView.setText(timeToDisplay);
-
-        return listItemView;
+    /**
+     * Return the formatted date string (i.e. "Mar 3, 1984") from a Date object.
+     */
+    private String formatDate(Date dateObject) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("LLL dd, yyyy");
+        return dateFormat.format(dateObject);
     }
+
+    /**
+     * Return the formatted date string (i.e. "4:30 PM") from a Date object.
+     */
+//    private String formatTime(Date dateObject) {
+//        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
+//        return timeFormat.format(dateObject);
+//    }
 
 }
